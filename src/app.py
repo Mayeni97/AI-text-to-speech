@@ -94,7 +94,9 @@ def main():
                 text = uploaded_file.read().decode()
             elif file_extension == 'pdf':
                 pdf_reader = PyPDF2.PdfReader(io.BytesIO(uploaded_file.read()))
-                text = '\n'.join([page.extract_text() for page in pdf_reader.pages])
+                # handle pages that may return None from extract_text
+                extracted = [page.extract_text() or "" for page in pdf_reader.pages]
+                text = '\n'.join(extracted)
             elif file_extension in ['doc', 'docx']:
                 doc = docx.Document(io.BytesIO(uploaded_file.read()))
                 text = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
